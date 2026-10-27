@@ -1,1 +1,69 @@
+// cidigo del corazón
+import * as THREE from 'three';
 
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+const renderer = new THREE.WebGLRenderer();
+renderer.setSize(window.innerWidth, window.innerHeight);
+document.body.innerHTML = '';
+document.body.appendChild(renderer.domElement);
+
+const geometry = new THREE.BoxGeometry(1.5, 1.5, 1.5);
+const material = new THREE.MeshBasicMaterial({ 
+  color: 0xff0000,
+  wireframe: true 
+});
+const cubo = new THREE.Mesh(geometry, material);
+scene.add(cubo);
+
+camera.position.z = 4;
+
+function animate() {
+  requestAnimationFrame(animate);
+
+  let escala = 1 + Math.sin(Date.now() * 0.003) * 0.3;
+  cubo.scale.set(escala, escala, escala);
+
+  renderer.render(scene, camera);
+}
+animate();
+
+
+//codigo de Semáforo
+import * as THREE from 'three';
+
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+const renderer = new THREE.WebGLRenderer();
+renderer.setSize(window.innerWidth, window.innerHeight);
+document.body.innerHTML = '';
+document.body.appendChild(renderer.domElement);
+
+// 1. Cubo alargado en vertical (caja del semáforo)
+const cajaGeometry = new THREE.BoxGeometry(1, 3.5, 0.5);
+const cajaMaterial = new THREE.MeshBasicMaterial({ color: 0x333333 });
+const caja = new THREE.Mesh(cajaGeometry, cajaMaterial);
+scene.add(caja);
+
+// 2. Tres esferas
+const esferaGeometry = new THREE.SphereGeometry(0.4, 32, 32);
+
+const esferaRoja = new THREE.Mesh(esferaGeometry, new THREE.MeshBasicMaterial({ color: 0xff0000 }));
+esferaRoja.position.y = 1.2;
+scene.add(esferaRoja);
+
+const esferaAmarilla = new THREE.Mesh(esferaGeometry, new THREE.MeshBasicMaterial({ color: 0xffff00 }));
+esferaAmarilla.position.y = 0;
+scene.add(esferaAmarilla);
+
+const esferaVerde = new THREE.Mesh(esferaGeometry, new THREE.MeshBasicMaterial({ color: 0x00ff00 }));
+esferaVerde.position.y = -1.2;
+scene.add(esferaVerde);
+
+camera.position.z = 5;
+
+function animate() {
+  requestAnimationFrame(animate);
+  renderer.render(scene, camera);
+}
+animate();
