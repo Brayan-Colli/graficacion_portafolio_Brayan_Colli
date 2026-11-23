@@ -1,8 +1,7 @@
-
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
-const canvas = document.querySelector('#canvass');
+const canvas = document.querySelector('#canvas');
 
 // Crear escena
 const scene = new THREE.Scene();
