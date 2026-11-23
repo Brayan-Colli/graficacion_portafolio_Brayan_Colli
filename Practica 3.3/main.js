@@ -20,7 +20,7 @@ renderizador.shadowMap.type = THREE.PCFSoftShadowMap;
 
 //Luz ambiental
 const luzAmb = new THREE.AmbientLight(0xffffff, 0.4);
-escene.add(luzAmb);
+scene.add(luzAmb);
 
 const luzSol = new THREE.DirectionalLight(0xffffff, 0.8);
 luzSol.position.set(5, 10, 7);
