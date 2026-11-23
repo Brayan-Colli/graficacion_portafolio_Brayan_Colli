@@ -1,18 +1,28 @@
+
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
-const canvas = document.querySelector('#canvas');
+const canvas = document.querySelector('#canvass');
 
-// crear escena 
+// Crear escena
 const scene = new THREE.Scene();
 scene.background = new THREE.Color(0x000000);
 
-// crear camara
-const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
+// Crear cámara
+const camera = new THREE.PerspectiveCamera(
+    60,
+    window.innerWidth / window.innerHeight,
+    0.1,
+    1000
+);
 camera.position.set(0, 5, 12);
 
-// crear renderizador
-const renderizador = new THREE.WebGLRenderer({ canvas, antialias: true }); 
+// Crear renderizador
+const renderizador = new THREE.WebGLRenderer({
+    canvas,
+    antialias: true
+});
+
 renderizador.setSize(window.innerWidth, window.innerHeight);
 renderizador.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
@@ -31,53 +41,105 @@ luzSol.shadow.mapSize.height = 2048;
 luzSol.shadow.bias = -0.001;
 scene.add(luzSol);
 
-// --- TUS OBJETOS ---
-
-// Piso
-const piso = new THREE.Mesh(
-  new THREE.PlaneGeometry(30, 30),
-  new THREE.MeshStandardMaterial({ color: 0x8a9ba8 })
-);
-piso.rotation.x = -Math.PI / 2;
-piso.receiveShadow = true;
-scene.add(piso);
-
-// Cubo blanco
-const cubo = new THREE.Mesh(
-  new THREE.BoxGeometry(2, 2, 2),
-  new THREE.MeshStandardMaterial({ color: 0xffffff })
-);
-cubo.position.set(0, 1, 0);
-cubo.castShadow = true;
-cubo.receiveShadow = true;
-scene.add(cubo);
-
-// Esfera roja (tu sol)
-const sol = new THREE.Mesh(
-  new THREE.SphereGeometry(1.2, 32, 32),
-  new THREE.MeshStandardMaterial({ color: 0xff0000 })
-);
-sol.position.set(0, 4, -3);
-sol.castShadow = true;
-scene.add(sol);
-
-// Controles para mover con el mouse
+// Controles de cámara
 const controls = new OrbitControls(camera, renderizador.domElement);
 controls.enableDamping = true;
+controls.dampingFactor = 0.05;
 
-// Animacion
-function animate() {
-  requestAnimationFrame(animate);
-  cubo.rotation.y += 0.01;
-  sol.rotation.y += 0.01;
-  controls.update();
-  renderizador.render(scene, camera);
-}
-animate();
+// Cargar textura
+const textureLoader = new THREE.TextureLoader();
 
-// Que no se deforme al cambiar tamaño
-window.addEventListener('resize', () => {
-  camera.aspect = window.innerWidth / window.innerHeight;
-  camera.updateProjectionMatrix();
-  renderizador.setSize(window.innerWidth, window.innerHeight);
+// Crear cubo
+const geometriaCubo = new THREE.BoxGeometry(1, 1, 1);
+const materialCubo = new THREE.MeshStandardMaterial({
+    color: 0xffffff
 });
+
+materialCubo.map = textureLoader.load(
+    'https://threejs.org/examples/textures/brick_diffuse.jpg'
+);
+
+materialCubo.roughness = 0.7;
+materialCubo.metalness = 0.0;
+
+const cubo = new THREE.Mesh(geometriaCubo, materialCubo);
+scene.add(cubo);
+cubo.castShadow = true;
+
+// Crear pedestal
+const pedestalArriba = 0.8;
+const pedestalFondo = 1.0;
+const pedestalAltura = 0.2;
+const separacionPedestal = 0.8;
+const pedestalSegmentos = 6;
+
+const geometriaPedestal = new THREE.CylinderGeometry(
+    pedestalArriba,
+    pedestalFondo,
+    pedestalAltura,
+    pedestalSegmentos
+);
+
+const materialPedestal = new THREE.MeshStandardMaterial({
+    color: 0x808080
+});
+
+const pedestal = new THREE.Mesh(
+    geometriaPedestal,
+    materialPedestal
+);
+
+pedestal.position.y = 0;
+pedestal.castShadow = true;
+pedestal.receiveShadow = true;
+scene.add(pedestal);
+
+// Crear esfera
+const esferaRadio = 0.3;
+const esferaSegmentos = 32;
+
+const geometriaEsfera = new THREE.SphereGeometry(
+    esferaRadio,
+    esferaSegmentos,
+    esferaSegmentos
+);
+
+const materialEsfera = new THREE.MeshStandardMaterial({
+    color: 0xff0000
+});
+
+const esfera = new THREE.Mesh(
+    geometriaEsfera,
+    materialEsfera
+);
+
+esfera.position.y = 2.5;
+esfera.castShadow = true;
+esfera.receiveShadow = true;
+scene.add(esfera);
+
+// Posición del cubo
+cubo.position.y = 0.2 + separacionPedestal;
+
+// Ajustar pantalla
+window.addEventListener('resize', () => {
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+
+    renderizador.setSize(window.innerWidth, window.innerHeight);
+    renderizador.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+});
+
+// Animación
+function animar() {
+    cubo.rotation.x += 0.01;
+    cubo.rotation.y += 0.01;
+
+    esfera.rotation.x += 0.01;
+
+    controls.update();
+
+    renderizador.render(scene, camera);
+}
+
+renderizador.setAnimationLoop(animar);
